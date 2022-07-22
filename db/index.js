@@ -14,13 +14,6 @@ async function getAllUsers() {
 }
 
 async function getAllPosts() {
-  // const { rows } = await client.query(`
-  //   SELECT id, "authorId", title, content, active
-  //   FROM posts;
-  // `);
-  // return rows;
-
-  // below is refactored getAllPosts - return associated information (tags and author) on each post
   try {
     const { rows: postIds } = await client.query(`
       SELECT id
@@ -145,7 +138,6 @@ async function updateUser(id, fields = {}){
   }
 
   try {
-    // const result = await client.query(`
     const { rows: [ user ] } = await client.query(`
       UPDATE users
       SET ${ setString }

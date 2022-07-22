@@ -6,7 +6,7 @@ const {
   updateUser,
   createPost,
   updatePost,
-  getPostsByUser,
+  // getPostsByUser,
   getAllPosts,
   getUserById,
   createTags,
