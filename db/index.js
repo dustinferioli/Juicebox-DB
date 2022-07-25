@@ -75,11 +75,9 @@ async function getUserById(userId){
       let userPosts = await getPostsByUser(userId);
 
       // then add the posts to the user object with key 'posts'
-      // user.push({ userPosts });
+      user.posts = userPosts;
 
       // return the user object
-      // return user;
-      user.posts = userPosts;
       return user;
 
     }

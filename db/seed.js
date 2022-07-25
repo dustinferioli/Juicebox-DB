@@ -43,12 +43,6 @@ async function createInitialUsers(){
   try {
     console.log("Starting to create users...");
 
-    // const albert = await createUser({ username: 'albert', password: 'bertie99' });
-    // console.log(albert);
-
-    // const albertTwo = await createUser({ username: 'albert', password: 'imposter_albert' });
-    // console.log(albertTwo);
-
     await createUser({ 
       username: 'albert', 
       password: 'bertie99',
@@ -185,32 +179,20 @@ async function rebuildDB() {
     await createInitialUsers();
     await createInitialPosts();
     // await createInitialTags();
+
   } catch (error) {
     console.error("redbuildDB error");
     throw error;
-  // } finally {
-  //   client.end();
   }
 }
 
 async function testDB() {
   try {
-    // connect the client to the database, finally
-    // client.connect();
     console.log("Starting to test database...");
 
-    // queries are promises, so we can await them
-    // const result = await client.query(`SELECT * FROM users;`);
-
-    // for now, logging is a fine way to see what's up
-    // console.log(result);
-
-    // const { rows } = await client.query(`SELECT * FROM users;`);
-    // console.log(rows);
     console.log("Calling getAllUsers");
     const users = await getAllUsers();
     console.log("getAllUsers:", users);
-
 
     console.log("Calling updateUser on users[0]");
     const updateUserResult = await updateUser(users[0].id, {
