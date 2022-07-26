@@ -4,14 +4,6 @@ const { getUserById, client } = require('../db');
 const { JWT_SECRET } = process.env;
 const apiRouter = express.Router();
 
-// apiRouter.use ((req, res, next) => {
-//     if (req.user){
-//         console.log("User is set:", req)
-//     }
-//     next();
-// })
-
-
 apiRouter.use(async (req, res, next) => {
     const prefix = 'Bearer ';
     const auth = req.header('Authorization');
