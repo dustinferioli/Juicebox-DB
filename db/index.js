@@ -69,19 +69,17 @@ async function getUserById(userId){
   // (3) one object, which is our user.
   try {
     const { rows: [ user ] } = await client.query(`
-      SELECT * FROM users
+      SELECT id, username, name, location, active 
+      FROM users
       WHERE id=${ userId };
     `);
 
-    console.log("This is our user: ", user)
+    // console.log("This is our user: ", user)
     // if it doesn't exist (if there are no `rows` or `rows.length`), return null
 
-    if (user.length === 0){
+    if (!user){
       return null;
     } else {
-      // if it does:
-      // delete the 'password' key from the returned object
-      delete user.password;
 
       // get their posts (use getPostsByUser)
       let userPosts = await getPostsByUser(userId);
@@ -331,6 +329,20 @@ async function getPostsByTagName(tagName) {
   }
 }
 
+async function getUserByUsername(username){
+  try {
+    const { rows: [user] } = await client.query(`
+      SELECT * FROM users
+      WHERE username=$1;
+    `, [username]);
+
+    return user;
+  } catch (error) {
+    console.log("Error in getUserByUsername");
+    throw error;
+  }
+}
+
 module.exports = {
   client,
   getAllUsers,
@@ -344,5 +356,6 @@ module.exports = {
   createTags,
   addTagsToPost,
   getPostsByTagName,
-  getAllTags
+  getAllTags,
+  getUserByUsername
 }
