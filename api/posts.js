@@ -2,8 +2,6 @@ const express = require('express');
 const postsRouter = express.Router();
 const { getAllPosts, createPost, updatePost, getPostById } = require('../db');
 const { requireUser } = require('./utils')
-const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = process.env;
 
 
 postsRouter.use((req, rest, next) => {
@@ -19,6 +17,8 @@ postsRouter.use((req, rest, next) => {
 //     })
 // })
 
+
+// Retrieving posts (updated to filter out inactive posts if not the author)
 postsRouter.get('/', async (req, res, next) => {
     try {
         const allPosts = await getAllPosts();
