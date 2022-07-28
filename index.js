@@ -9,7 +9,8 @@ const { client } = require('./db');
 client.connect();
 
 server.use(morgan('dev'));
-// logs information about every request
+// logs information about every request like:
+// DELETE /api/users/1 200 20.768 ms - 127
 
 server.use(express.json());
 

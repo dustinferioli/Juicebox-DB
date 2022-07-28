@@ -1,7 +1,7 @@
 const express = require('express');
 const postsRouter = express.Router();
 const { getAllPosts, createPost, updatePost, getPostById } = require('../db');
-const { requireUser } = require('./utils')
+const { requireUser, requireActiveUser } = require('./utils')
 
 
 postsRouter.use((req, rest, next) => {
@@ -9,22 +9,13 @@ postsRouter.use((req, rest, next) => {
     next();
 })
 
-// Retrieving posts
-// postsRouter.get('/', async (req, res) => {
-//     const posts = await getAllPosts();
-//     res.send({
-//         posts
-//     })
-// })
-
-
 // Retrieving posts (updated to filter out inactive posts if not the author)
 postsRouter.get('/', async (req, res, next) => {
     try {
         const allPosts = await getAllPosts();
 
         const posts = allPosts.filter(post => {
-            if (post.active){
+            if (post.active && post.author.active){
                 return true;
             } 
             
@@ -43,7 +34,7 @@ postsRouter.get('/', async (req, res, next) => {
 })
 
 // creating a post
-postsRouter.post('/', requireUser, async (req, res, next) => {
+postsRouter.post('/', requireActiveUser, async (req, res, next) => {
 
     const { title, content, tags = "" } = req.body;
 
@@ -77,7 +68,7 @@ postsRouter.post('/', requireUser, async (req, res, next) => {
 })
 
 // updating a post
-postsRouter.patch('/:postId', requireUser, async (req, res, next) => {
+postsRouter.patch('/:postId', requireActiveUser, async (req, res, next) => {
     const { postId } = req.params;
     const { title, content, tags } = req.body;
 
@@ -113,10 +104,10 @@ postsRouter.patch('/:postId', requireUser, async (req, res, next) => {
 })
 
 // deleting a post
-postsRouter.delete('/:postId', requireUser, async (req, res, next) => {
+postsRouter.delete('/:postId', requireActiveUser, async (req, res, next) => {
     try {
         const post = await getPostById(req.params.postId);
-
+        
         if (post && post.author.id === req.user.id){
             const updatedPost = await updatePost(post.id, { active: false });
 
@@ -134,8 +125,6 @@ postsRouter.delete('/:postId', requireUser, async (req, res, next) => {
         next({ name, message })
     }
 })
-
-// filtering out inactive posts
 
 
 

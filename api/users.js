@@ -1,9 +1,9 @@
 const express = require('express');
 const usersRouter = express.Router();
-const { getAllUsers, getUserByUsername, createUser } = require('../db');
+const { getAllUsers, getUserByUsername, createUser, getUserById, updateUser } = require('../db');
+const { requireUser, requireActiveUser } = require('./utils')
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
-
 
 usersRouter.use((req, res, next) => {
     console.log("A request is being made to /users");
@@ -21,9 +21,6 @@ usersRouter.get('/', async (req, res) => {
 })
 
 usersRouter.post('/login', async (req, res, next) => {
-    // console.log(req.body);
-    // res.end();
-
     const { username, password } = req.body;
 
     // requests must have both
@@ -51,6 +48,8 @@ usersRouter.post('/login', async (req, res, next) => {
         next(error);
     }
 })
+
+
 
 usersRouter.post('/register', async (req, res, next) => {
     const { username, password, name, location } = req.body;
@@ -83,6 +82,77 @@ usersRouter.post('/register', async (req, res, next) => {
             message: "Thank you for signing up",
             token
         })
+    } catch ({ name, message }) {
+        next({ name, message })
+    }
+});
+
+// gets a user by userId
+usersRouter.get('/:userId', requireUser, async (req, res, next) => {
+    try {
+        console.log("This is our req.params.id: ", req.params.userId)
+        const user = await getUserById(req.params.userId);
+        console.log("This is our usssser", user);
+        console.log(req.params.userId == user.id)
+        if (user && user.id == req.params.userId){
+            res.send(user)
+        } else {
+            next(user ? {
+                name:"UnauthorizedUserError",
+                message: "You cannot access an account that is not yours"
+            } : {
+                name: "UserNotFoundError",
+                message: "This user does not exist"
+            })
+        }
+    } catch ({ name, message }) {
+        next({ name, message })
+    }
+})
+
+
+// deactivates a user
+usersRouter.delete('/:userId', requireActiveUser, async (req, res, next) => {
+    try {
+        const user = await getUserById(req.params.userId);
+
+        if (user && user.id == req.params.userId){
+            const deactivatedUser = await updateUser(user.id, { active : false });
+            res.send({
+                user: deactivatedUser
+            })
+        } else {
+            next(user ? {
+                name: "UnauthorizedUserError",
+                message: "You cannot deactivate an account that is not yours"
+            } : {
+                name: "UserNotFoundError",
+                message: "This user does not exist"
+            })
+        }
+    } catch ({ name, message }) {
+        next({ name, message })
+    }
+})
+
+// re-activates user
+usersRouter.patch('/:userId', requireUser, async (req, res, next) => {
+    try {
+        const user = await getUserById(req.params.userId);
+        if (user && user.id == req.params.userId){
+            const reactivatedUser = await updateUser(user.id, { active : true });
+            res.send({
+                user: reactivatedUser
+            })
+        } else {
+            next(user ? {
+                name: "UnauthorizedUserError",
+                message: "You cannot reactivate an account that is not yours"
+            } : {
+                name: "UserNotFoundError",
+                message: "This user does not exist"
+            })
+        }
     } catch ({ name, message }) {
         next({ name, message })
     }

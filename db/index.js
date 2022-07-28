@@ -63,19 +63,12 @@ async function getPostsByUser(userId){
 }
 
 async function getUserById(userId){
-  // first get the user (NOTE: Remember the query returns 
-  // (1) an object that contains 
-  // (2) a `rows` array that (in this case) will contain 
-  // (3) one object, which is our user.
   try {
     const { rows: [ user ] } = await client.query(`
       SELECT id, username, name, location, active 
       FROM users
       WHERE id=${ userId };
     `);
-
-    // console.log("This is our user: ", user)
-    // if it doesn't exist (if there are no `rows` or `rows.length`), return null
 
     if (!user){
       return null;
@@ -299,7 +292,7 @@ async function getPostById(postId){
     `, [postId]);
 
     const { rows: [author] } = await client.query(`
-      SELECT id, username, name, location
+      SELECT id, username, name, location, active
       FROM users
       WHERE id=$1;
     `, [post.authorId]);
