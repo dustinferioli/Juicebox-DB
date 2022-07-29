@@ -89,7 +89,7 @@ postsRouter.patch('/:postId', requireActiveUser, async (req, res, next) => {
     try {
         const originalPost = await getPostById(postId);
 
-        if (originalPost.author.id = req.user.id){
+        if (originalPost.author.id === req.user.id){
             const updatedPost = await updatePost(postId, updateFields);
             res.send({ post: updatedPost })
         } else {

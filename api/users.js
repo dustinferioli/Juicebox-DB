@@ -90,10 +90,8 @@ usersRouter.post('/register', async (req, res, next) => {
 // gets a user by userId
 usersRouter.get('/:userId', requireUser, async (req, res, next) => {
     try {
-        console.log("This is our req.params.id: ", req.params.userId)
         const user = await getUserById(req.params.userId);
-        console.log("This is our usssser", user);
-        console.log(req.params.userId == user.id)
+        
         if (user && user.id == req.params.userId){
             res.send(user)
         } else {
